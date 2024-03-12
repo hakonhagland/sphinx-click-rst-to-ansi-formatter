@@ -1,1 +1,1 @@
-# sphinx_click.rst_to_ansi_formatter
+# sphinx-click-rst-to-ansi-formatter
