@@ -36,6 +36,9 @@ namespace_packages = true
 explicit_package_bases = true
 strict = true
 
+[tool.coverage.report]
+fail_under = 100
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

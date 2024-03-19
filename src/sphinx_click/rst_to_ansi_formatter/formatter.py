@@ -10,6 +10,7 @@ import click
 from .colors import Colors
 from .types import ColorDict
 
+
 # Visitor that will transform the document tree into plain text
 class PlainTextVisitor(docutils.nodes.NodeVisitor):
     def __init__(self, document: docutils.nodes.document, colors: Colors):
@@ -30,12 +31,18 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
     def color_code(self, txt: str) -> str:
         return self.colors.color_code(txt)
 
-    def depart_emphasis(self, node: docutils.nodes.emphasis) -> None:
-        # No action needed on departure for emphasis nodes yet
+    def depart_emphasis(
+        self, node: docutils.nodes.emphasis
+    ) -> None:  # pragma: no cover
+        # NOTE: this method will not be called since visit_emphasis raises
+        #       a docutils.nodes.SkipNode exception at the end
         pass
 
-    def depart_literal_block(self, node: docutils.nodes.literal_block) -> None:
-        # No action needed on departure for literal block nodes yet
+    def depart_literal_block(
+        self, node: docutils.nodes.literal_block
+    ) -> None:  # pragma: no cover
+        # NOTE: this method will not be called since visit_literal_block() raises
+        #       a docutils.nodes.SkipNode exception at the end
         pass
 
     def depart_literal(self, node: docutils.nodes.literal) -> None:
@@ -45,16 +52,22 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         # No action needed on departure for paragraph nodes yet
         pass
 
-    def depart_reference(self, node: docutils.nodes.reference) -> None:
-        # No action needed on departure for reference nodes yet
+    def depart_reference(
+        self, node: docutils.nodes.reference
+    ) -> None:  # pragma: no cover
+        # NOTE: this method will not be called since visit_reference() raises
+        #       a docutils.nodes.SkipNode exception at the end
         pass
 
     def depart_Text(self, node: docutils.nodes.Text) -> None:
         # No action needed on departure for Text nodes yet
         pass
 
-    def depart_title_reference(self, node: docutils.nodes.title_reference) -> None:
-        # No action needed on departure for title_reference nodes yet
+    def depart_title_reference(
+        self, node: docutils.nodes.title_reference
+    ) -> None:  # pragma: no cover
+        # NOTE: this method will not be called since visit_title_reference() raises
+        #       a docutils.nodes.SkipNode exception at the end
         pass
 
     # At the end of processing, append all URLs:
@@ -112,7 +125,7 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
             self.parts.append(txt)
         else:
             # No special colors for internal references yet
-            self.parts.append(txt)
+            self.parts.append(txt)  # pragma: no cover
         raise docutils.nodes.SkipNode
 
     def visit_Text(self, node: docutils.nodes.Text) -> None:
@@ -265,7 +278,7 @@ class ClickRstToAnsiFormatter(click.Command):
         *args,
         base_url: str | None = None,
         colors: ColorDict | None = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
         self.base_url = base_url
@@ -282,7 +295,7 @@ class ClickRstToAnsiFormatter(click.Command):
 # Factory function that creates a custom formatter class with a base URL
 def make_rst_to_ansi_formatter(
     base_url: str, colors: ColorDict | None = None
-) -> 'CustomRstToAnsiFormatter':  # type: ignore  # noqa: F821
+) -> "CustomRstToAnsiFormatter":  # type: ignore  # noqa: F821
     """Create a reST to ANSI text formatter class.
 
     :param str base_url: The base url for the documentation page

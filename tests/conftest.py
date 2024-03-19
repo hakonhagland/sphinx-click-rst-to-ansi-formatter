@@ -6,7 +6,7 @@ from sphinx_click.rst_to_ansi_formatter.colors import Colors
 
 
 @pytest.fixture(scope="session")
-def tests_assets_path() -> Path:
+def tests_assets_path() -> Path:  # pragma: no cover
     return Path(__file__).parent / "assets"
 
 

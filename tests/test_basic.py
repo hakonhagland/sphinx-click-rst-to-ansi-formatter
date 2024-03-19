@@ -68,6 +68,7 @@ class TestURLs:
     def test_url_listing_at_end(self, colors: Colors) -> None:
         docstring = """
         Visit :doc:`/example` and :doc:`/another-example` for more info.
+        The :doc:`/example` has more information.
         """
         base_url = "https://example.github.io/example/main/"
         converter = formatter.RstToAnsiConverter(docstring, base_url)
@@ -114,3 +115,26 @@ class TestIndentation:
         assert adjusted_docstring.startswith(
             "        First line not indented.\n        Second line indented."
         )
+
+    def test_indentation_not_found(self) -> None:
+        docstring = """First line not indented.
+
+        """
+        # Expected to adjust the first line to match the second line's indentation
+        adjusted_docstring = formatter.RstToAnsiConverter.fix_first_line_indentation(
+            docstring
+        )
+        assert adjusted_docstring.startswith("First line not indented.")
+
+
+class TestEmphasis:
+    def test_emphasis_handling(self, colors: Colors) -> None:
+        docstring = """
+        This is an *emphasized* text example.
+        """
+        base_url = "https://example.github.io/example/main/"
+        converter = formatter.RstToAnsiConverter(docstring, base_url)
+        converted_text = converter.convert()
+        ansi1 = colors.color_code("emphasized")
+        # Check if the emphasized text is correctly colored
+        assert ansi1 in converted_text
