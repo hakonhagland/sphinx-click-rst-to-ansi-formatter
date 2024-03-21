@@ -2,7 +2,7 @@
 ROOT := $(shell pwd)
 
 .PHONY: coverage docs mypy test publish-to-pypi tox
-.PHONY: ruff-check ruff-fix ruff-format
+.PHONY: ruff-check ruff-fix ruff-format rstcheck
 
 coverage:
 	coverage run -m pytest tests
@@ -15,13 +15,16 @@ mypy:
 	MYPYPATH=src mypy --namespace-packages --explicit-package-bases --strict src tests
 
 ruff-check:
-	ruff check src tests
+	ruff check src tests docs
 
 ruff-fix:
-	ruff fix src tests
+	ruff fix src tests docs
 
 ruff-format:
-	ruff format src tests
+	ruff format src tests docs
+
+rstcheck:
+	rstcheck -r docs/
 
 publish-to-pypi:
 	poetry publish --build
