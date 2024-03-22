@@ -26,6 +26,7 @@ types-docutils = "^0.20.0.20240317"
 types-click = "^7.1.8"
 tox = "^4.14.1"
 rstcheck = {extras = ["sphinx", "toml"], version = "^6.2.0"}
+toml = "^0.10.2"
 
 [tool.ruff]
 line-length = 88
@@ -44,6 +45,7 @@ fail_under = 100
 
 [tool.rstcheck]
 report_level = "INFO"
+ignore_directives = ["automodule", "autoclass", "toctree"]
 
 [build-system]
 requires = ["poetry-core"]

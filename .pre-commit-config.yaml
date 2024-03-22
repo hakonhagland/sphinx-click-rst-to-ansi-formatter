@@ -32,6 +32,10 @@ repos:
     rev: v6.2.0
     hooks:
       - id: rstcheck
+        args: ["--ignore-directives", "automodule"]
+        additional_dependencies:
+          - sphinx==7.2.6
+          - toml==0.10.2
 -   repo: local
     hooks:
       - id: coverage

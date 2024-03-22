@@ -296,16 +296,15 @@ class ClickRstToAnsiFormatter(click.Command):
 def make_rst_to_ansi_formatter(
     base_url: str, colors: ColorDict | None = None
 ) -> "CustomRstToAnsiFormatter":  # type: ignore  # noqa: F821
-    """Create a reST to ANSI text formatter class.
+    """
+    Create a reST to ANSI text formatter class.
 
-    :param str base_url: The base url for the documentation page
+    :param str base_url: The base url for the documentation page. This will be used to construct URLs for the Sphinx reST ``:doc:`` role.
     :type base_url: str
-    :param dict[str, dict] colors: The colors to use when translating reST formatting
-    codes
+    :param dict[str, dict] colors: The colors to use when translating reST formatting codes. If not provided, default colors will be used. The dictionary should have keys "heading", "url", and "code" with values that are dictionaries with keys "fg" and "style" that specify the foreground color and style to use. The default value is: ``{ "heading": {"fg": Fore.GREEN, "style": Style.BRIGHT}, "url": {"fg": Fore.CYAN, "style": Style.BRIGHT}, "code": {"fg": Fore.CYAN, "style": Style.DIM}, }``. For more information about the "fg" and "style" values, see the `colorama documentation <https://pypi.org/project/colorama/>`_.
 
-    :rtype: click.Command formatter class
-    :return: Returns a sub class of click.Command that can be used to convert
-    help text from reST to ANSI terminal color encoded text
+    :rtype: ``CustomRstToAnsiFormatter``
+    :return: Returns a sub class of ``click.Command`` that can be used to convert help text from reST to ANSI terminal color encoded text
     """
 
     class CustomRstToAnsiFormatter(ClickRstToAnsiFormatter):
