@@ -21,7 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Suggesting changes to the code" href="development.html" />
+    <link rel="next" title="Usage" href="usage.html" />
     <link rel="prev" title="Welcome to Sphinx-click-rst-to-ansi-formatter’s documentation!" href="index.html" /> 
 </head>
 
@@ -47,7 +47,9 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="see-also.html">See also</a></li>
 </ul>
 
         </div>
@@ -76,7 +78,16 @@
              
   <section id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
-<p>Introduction.</p>
+<p>The <a class="reference external" href="https://github.com/click-contrib/sphinx-click">sphinx-click</a> module lets you
+extract documentation from your <a class="reference external" href="https://github.com/pallets/click">Click-based</a>
+command-line interfaces and automatically generates a Sphinx documentation page for them.</p>
+<p>This makes it convenient to write the docstrings for your Click commands
+in the same format as the rest of your Sphinx documentation (reST). The only issue
+is that if the docstrings contain reST markup, the Sphinx documentation will render
+it correctly, but the console help output will not.
+This module extends the functionality of <code class="docutils literal notranslate"><span class="pre">sphinx-click</span></code> by adding support for
+converting reST formatted docstrings to ANSI colored text when printing
+the click help text to the console.</p>
 </section>
 
 
@@ -84,7 +95,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Sphinx-click-rst-to-ansi-formatter’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="development.html" class="btn btn-neutral float-right" title="Suggesting changes to the code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="usage.html" class="btn btn-neutral float-right" title="Usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

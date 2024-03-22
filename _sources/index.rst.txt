@@ -6,7 +6,9 @@ Welcome to Sphinx-click-rst-to-ansi-formatter's documentation!
     :caption: Contents:
 
     introduction
+    usage
     Development <development>
+    See also <see-also>
 
 Indices and tables
 ==================
