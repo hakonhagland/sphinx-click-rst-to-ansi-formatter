@@ -10,6 +10,7 @@ packages = [{include = "sphinx_click", from = "src"}]
 python = "^3.10"
 colorama = "^0.4.6"
 click = "^8.1.7"
+docutils = "^0.20.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
