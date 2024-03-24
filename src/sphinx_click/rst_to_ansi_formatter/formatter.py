@@ -4,6 +4,8 @@ import docutils.nodes
 import docutils.utils
 import re
 import textwrap
+import typing
+from typing import Any
 
 import click
 
@@ -271,30 +273,27 @@ class RstToAnsiConverter:
         return processed_docstring
 
 
-# Custom Click command that uses the custom formatter
-class ClickRstToAnsiFormatter(click.Command):
-    def __init__(  # type: ignore
-        self,
-        *args,
-        base_url: str | None = None,
-        colors: ColorDict | None = None,
-        **kwargs,
-    ) -> None:
-        super().__init__(*args, **kwargs)
+class FormatHelpMixin:
+    def __init__(self, base_url: str | None = None, colors: ColorDict | None = None):
         self.base_url = base_url
         self.colors = colors
 
     def format_help(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
-        if self.help:
-            self.help = RstToAnsiConverter(
-                self.help, self.base_url, self.colors
+        # Assume that the click command superclass has a help attribute
+        # See click source code:
+        # https://github.com/pallets/click/blob/f8857cb03268b5b952b88b2acb3e11d9f0f7b6e4/src/click/core.py#L1042
+        help_text: str | None = typing.cast(str | None, getattr(self, "help", None))
+        if help_text is not None:
+            updated_help_text = RstToAnsiConverter(
+                help_text, self.base_url, self.colors
             ).convert()
-        super().format_help(ctx, formatter)
+            setattr(self, "help", updated_help_text)
+        super().format_help(ctx, formatter)  # type: ignore # Call the superclass method
 
 
 # Factory function that creates a custom formatter class with a base URL
 def make_rst_to_ansi_formatter(
-    base_url: str, colors: ColorDict | None = None
+    base_url: str, colors: ColorDict | None = None, group: bool = False
 ) -> "CustomRstToAnsiFormatter":  # type: ignore  # noqa: F821
     """
     Create a reST to ANSI text formatter class.
@@ -302,13 +301,21 @@ def make_rst_to_ansi_formatter(
     :param str base_url: The base url for the documentation page. This will be used to construct URLs for the Sphinx reST ``:doc:`` role.
     :type base_url: str
     :param dict[str, dict] colors: The colors to use when translating reST formatting codes. If not provided, default colors will be used. The dictionary should have keys "heading", "url", and "code" with values that are dictionaries with keys "fg" and "style" that specify the foreground color and style to use. The default value is: ``{ "heading": {"fg": Fore.GREEN, "style": Style.BRIGHT}, "url": {"fg": Fore.CYAN, "style": Style.BRIGHT}, "code": {"fg": Fore.CYAN, "style": Style.DIM}, }``. For more information about the "fg" and "style" values, see the `colorama documentation <https://pypi.org/project/colorama/>`_.
+    :param bool group: If True, a ``click.Group`` will be returned, otherwise a ``click.Command`` will be returned. The default is False.
 
     :rtype: ``CustomRstToAnsiFormatter``
     :return: Returns a sub class of ``click.Command`` that can be used to convert help text from reST to ANSI terminal color encoded text
     """
+    base_cls = click.Group if group else click.Command
 
-    class CustomRstToAnsiFormatter(ClickRstToAnsiFormatter):
-        def __init__(self, *args, **kwargs) -> None:  # type: ignore
-            super().__init__(*args, base_url=base_url, colors=colors, **kwargs)
+    # NOTE: It is important to have the FormatHelpMixin as the first base class
+    #      such that when click calls self.format_help() it will call format_help()
+    #      in the FormatHelpMixin class and not the one in the base_cls.
+    class CustomRstToAnsiFormatter(FormatHelpMixin, base_cls):  # type: ignore
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            # Initialize FormatHelpMixin with specific arguments
+            FormatHelpMixin.__init__(self, base_url=base_url, colors=colors)
+            # Pass all positional and keyword arguments to the base class initializer
+            base_cls.__init__(self, *args, **kwargs)  # type: ignore
 
     return CustomRstToAnsiFormatter
