@@ -50,6 +50,11 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#signature">Signature</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sphinx_click.rst_to_ansi_formatter.formatter.FormatHelpMixin"><code class="docutils literal notranslate"><span class="pre">FormatHelpMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sphinx_click.rst_to_ansi_formatter.formatter.FormatHelpMixin.__init__"><code class="docutils literal notranslate"><span class="pre">FormatHelpMixin.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sphinx_click.rst_to_ansi_formatter.formatter.FormatHelpMixin.format_help"><code class="docutils literal notranslate"><span class="pre">FormatHelpMixin.format_help()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#sphinx_click.rst_to_ansi_formatter.formatter.make_rst_to_ansi_formatter"><code class="docutils literal notranslate"><span class="pre">make_rst_to_ansi_formatter()</span></code></a></li>
 </ul>
 </li>
@@ -131,15 +136,37 @@ the console output becomes:</p>
 <section id="signature">
 <h2>Signature<a class="headerlink" href="#signature" title="Link to this heading"></a></h2>
 <p>The signature for <code class="docutils literal notranslate"><span class="pre">make_rst_to_ansi_formatter</span></code> is:</p>
-<dl class="py function" id="module-sphinx_click.rst_to_ansi_formatter.formatter">
+<dl class="py class" id="module-sphinx_click.rst_to_ansi_formatter.formatter">
+<dt class="sig sig-object py" id="sphinx_click.rst_to_ansi_formatter.formatter.FormatHelpMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sphinx_click.rst_to_ansi_formatter.formatter.</span></span><span class="sig-name descname"><span class="pre">FormatHelpMixin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sphinx_click.rst_to_ansi_formatter.formatter.FormatHelpMixin" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sphinx_click.rst_to_ansi_formatter.formatter.FormatHelpMixin.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sphinx_click.rst_to_ansi_formatter.formatter.FormatHelpMixin.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sphinx_click.rst_to_ansi_formatter.formatter.FormatHelpMixin.format_help">
+<span class="sig-name descname"><span class="pre">format_help</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formatter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sphinx_click.rst_to_ansi_formatter.formatter.FormatHelpMixin.format_help" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="sphinx_click.rst_to_ansi_formatter.formatter.make_rst_to_ansi_formatter">
-<span class="sig-prename descclassname"><span class="pre">sphinx_click.rst_to_ansi_formatter.formatter.</span></span><span class="sig-name descname"><span class="pre">make_rst_to_ansi_formatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sphinx_click.rst_to_ansi_formatter.formatter.make_rst_to_ansi_formatter" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">sphinx_click.rst_to_ansi_formatter.formatter.</span></span><span class="sig-name descname"><span class="pre">make_rst_to_ansi_formatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sphinx_click.rst_to_ansi_formatter.formatter.make_rst_to_ansi_formatter" title="Link to this definition"></a></dt>
 <dd><p>Create a reST to ANSI text formatter class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_url</strong> (<em>str</em>) – The base url for the documentation page. This will be used to construct URLs for the Sphinx reST <code class="docutils literal notranslate"><span class="pre">:doc:</span></code> role.</p></li>
 <li><p><strong>colors</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>dict</em><em>]</em>) – The colors to use when translating reST formatting codes. If not provided, default colors will be used. The dictionary should have keys “heading”, “url”, and “code” with values that are dictionaries with keys “fg” and “style” that specify the foreground color and style to use. The default value is: <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">&quot;heading&quot;:</span> <span class="pre">{&quot;fg&quot;:</span> <span class="pre">Fore.GREEN,</span> <span class="pre">&quot;style&quot;:</span> <span class="pre">Style.BRIGHT},</span> <span class="pre">&quot;url&quot;:</span> <span class="pre">{&quot;fg&quot;:</span> <span class="pre">Fore.CYAN,</span> <span class="pre">&quot;style&quot;:</span> <span class="pre">Style.BRIGHT},</span> <span class="pre">&quot;code&quot;:</span> <span class="pre">{&quot;fg&quot;:</span> <span class="pre">Fore.CYAN,</span> <span class="pre">&quot;style&quot;:</span> <span class="pre">Style.DIM},</span> <span class="pre">}</span></code>. For more information about the “fg” and “style” values, see the <a class="reference external" href="https://pypi.org/project/colorama/">colorama documentation</a>.</p></li>
+<li><p><strong>group</strong> (<em>bool</em>) – If True, a <code class="docutils literal notranslate"><span class="pre">click.Group</span></code> will be returned, otherwise a <code class="docutils literal notranslate"><span class="pre">click.Command</span></code> will be returned. The default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
