@@ -103,6 +103,25 @@ class TestLiteralBlocks:
         assert "def hello():" in converted_text
 
 
+class TestBulletList:
+    def test_bullet_list_handling(self, colors: Colors) -> None:
+        docstring = """The following is a bullet list:
+
+        * This is a bullet list.
+        * Another bullet point.
+
+        Next paragraph.
+        """
+        base_url = "https://example.github.io/example/main/"
+        converter = formatter.RstToAnsiConverter(docstring, base_url)
+        converted_text = converter.convert()
+        # Check if the bullet list is correctly formatted
+        assert (
+            "The following is a bullet list:\n\n\x08\n• This is a bullet list.\n• Another bullet point.\n\n\nNext paragraph."
+            == converted_text
+        )
+
+
 class TestIndentation:
     def test_first_line_indentation_preservation(self) -> None:
         docstring = """First line not indented.

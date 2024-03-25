@@ -1,4 +1,3 @@
-# import logging
 import docutils.core
 import docutils.nodes
 import docutils.utils
@@ -17,12 +16,20 @@ from .types import ColorDict
 class PlainTextVisitor(docutils.nodes.NodeVisitor):
     def __init__(self, document: docutils.nodes.document, colors: Colors):
         docutils.nodes.NodeVisitor.__init__(self, document)
-        self.parts: list[str] = []  # Collect the parts of the docstring here
+        # Main content buffer: Collect the parts of the docstring here
+        self.parts: list[str] = []
         self.urls: list[str] = []  # Store URLs to be listed at the end of the docstring
+        # Temporary buffer to store the current list item
+        self.current_list_item: list[str] = []
+        self.current_buffer: list[str] = (
+            self.parts
+        )  # Initially points to the main buffer
         self.in_literal = (
             False  # Flag to indicate if we're inside a literal block (quoted text)
         )
+        self.in_bullet_list = False  # Flag to indicate if we're inside a bullet list
         self.colors = colors
+        self.wrap_width = 80
 
     def color_heading(self, txt: str) -> str:
         return self.colors.color_heading(txt)
@@ -33,12 +40,26 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
     def color_code(self, txt: str) -> str:
         return self.colors.color_code(txt)
 
+    def depart_bullet_list(self, node: docutils.nodes.bullet_list) -> None:
+        self.in_bullet_list = False
+
     def depart_emphasis(
         self, node: docutils.nodes.emphasis
     ) -> None:  # pragma: no cover
         # NOTE: this method will not be called since visit_emphasis raises
         #       a docutils.nodes.SkipNode exception at the end
         pass
+
+    def depart_list_item(self, node: docutils.nodes.list_item) -> None:
+        # Process the accumulated list item content now that we've traversed the whole item
+        item_text = "".join(self.current_list_item)
+        wrapped_text = textwrap.fill(
+            item_text, width=self.wrap_width, subsequent_indent="  "
+        )
+        self.parts.append(
+            "• " + wrapped_text + "\n"
+        )  # Append formatted content to main buffer
+        self.current_buffer = self.parts  # Switch back to using the main buffer
 
     def depart_literal_block(
         self, node: docutils.nodes.literal_block
@@ -81,6 +102,14 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
             for index, url in enumerate(self.urls, start=1):
                 self.parts.append(self.color_url(f"{index}.") + f" {url}\n")
 
+    def visit_bullet_list(self, node: docutils.nodes.bullet_list) -> None:
+        # Prepend with backspace and a newline to ensure the list is not rewrapped by Click
+        # and to maintain the desired spacing. See comment for visit_literal_block() for
+        # more information.
+        self.in_bullet_list = True
+        self.parts.append("\n\n\b\n")
+        pass
+
     def visit_emphasis(self, node: docutils.nodes.emphasis) -> None:
         # This method is called for each emphasis node in the document. That is, for
         # text in asterisks or underscores (e.g. *text* or _text_).
@@ -96,10 +125,19 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
             # Replace the URL with a placeholder
             txt = f"[{idx}]"
         # Prepend and append the emphasis with ANSI color codes
-        self.parts.append(self.color_code(txt))
+        self.current_buffer.append(self.color_code(txt))
         # Skip further processing of children by docutils since we've manually
         #  processed the text
         raise docutils.nodes.SkipNode
+
+    def visit_list_item(self, node: docutils.nodes.list_item) -> None:
+        # This method is called for each list item node in the document.
+        # For example, for each item in a bullet list (unordered list
+        # in reStructuredText).
+        self.current_list_item = []
+        self.current_buffer = (
+            self.current_list_item
+        )  # Switch to using the list item buffer
 
     def visit_literal(self, node: docutils.nodes.literal) -> None:
         self.in_literal = True  # Entering a literal block
@@ -110,12 +148,13 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         #   https://click.palletsprojects.com/en/8.1.x/api/#formatting
         # If paragraphs are handled, a paragraph can be prefixed with an empty line containing
         # the \b character (\x08) to indicate that no rewrapping should happen in that block.
-        self.parts.append("\n\n\b\n" + self.color_code(txt) + "\n\n")
+        self.current_buffer.append("\n\n\b\n" + self.color_code(txt) + "\n\n")
         # Prevent further processing of child nodes, as we've already processed the text
         raise docutils.nodes.SkipNode
 
     def visit_paragraph(self, node: docutils.nodes.paragraph) -> None:
-        self.parts.append("\n\n")
+        if not self.in_bullet_list:
+            self.current_buffer.append("\n\n")
 
     def visit_reference(self, node: docutils.nodes.reference) -> None:
         # This method is called for each reference node in the document. That is, for
@@ -124,23 +163,24 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         txt = node.astext()
         if txt.startswith("http://") or txt.startswith("https://"):
             # No special colors for URLs yet
-            self.parts.append(txt)
+            self.current_buffer.append(txt)
         else:
             # No special colors for internal references yet
-            self.parts.append(txt)  # pragma: no cover
+            self.current_buffer.append(txt)  # pragma: no cover
         raise docutils.nodes.SkipNode
 
     def visit_Text(self, node: docutils.nodes.Text) -> None:
+        txt = node.astext()
         if self.in_literal:
             # Wrap the text in ANSI codes for bright cyan
-            self.parts.append(self.color_code(node.astext()))
+            self.current_buffer.append(self.color_code(txt))
         else:
-            self.parts.append(node.astext())
+            self.current_buffer.append(txt)
 
     def visit_title(self, node: docutils.nodes.title) -> None:
         # This method processes the section titles.
         txt = node.astext()
-        self.parts.append("\n\n" + self.color_heading(txt) + "\n\n")
+        self.current_buffer.append("\n\n" + self.color_heading(txt) + "\n\n")
         raise docutils.nodes.SkipNode
 
     def visit_title_reference(self, node: docutils.nodes.title_reference) -> None:
@@ -148,7 +188,7 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         # For example text in backticks (`text`).
         txt = node.astext()
         # TODO: How to color the text in backticks?
-        self.parts.append(txt)
+        self.current_buffer.append(txt)
         # Prevent further processing of child nodes, as we've already processed the text
         raise docutils.nodes.SkipNode
 

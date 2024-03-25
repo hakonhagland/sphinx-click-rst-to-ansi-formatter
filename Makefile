@@ -18,7 +18,7 @@ ruff-check:
 	ruff check src tests docs
 
 ruff-fix:
-	ruff fix src tests docs
+	ruff check --fix src tests docs
 
 ruff-format:
 	ruff format src tests docs
