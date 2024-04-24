@@ -66,4 +66,4 @@ Signature
 The signature for ``make_rst_to_ansi_formatter`` is:
 
 .. automodule:: sphinx_click.rst_to_ansi_formatter.formatter
-   :exclude-members: ClickRstToAnsiFormatter, PlainTextVisitor, RstToAnsiConverter
+   :exclude-members: ClickRstToAnsiFormatter, PlainTextVisitor, RstToAnsiConverter, FormatHelpMixin
