@@ -57,13 +57,14 @@ class TestURLs:
     def test_internal_reference_handling(self) -> None:
         docstring = """
         See the :doc:`usage guide <usage>` for more information.
+        See the `example page <https://example.com>`_. for an example.
         """
         base_url = "https://example.github.io/example/main/"
         converter = formatter.RstToAnsiConverter(docstring, base_url)
         converted_text = converter.convert()
-
         # Check if the URL replacement for internal reference works correctly
         assert "https://example.github.io/example/main/usage.html" in converted_text
+        assert "https://example.com" in converted_text
 
     def test_url_listing_at_end(self, colors: Colors) -> None:
         docstring = """

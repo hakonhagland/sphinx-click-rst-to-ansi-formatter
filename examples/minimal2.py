@@ -22,7 +22,8 @@ def minimal():
       $ minimal-example --help
 
 
-    For more information about the minimal example script see :doc:`/history`.
+    For more information about the minimal example script see :doc:`/history` and
+    `the source code <https://github.com/hakonhagland/sphinx-click-rst-to-ansi-formatter>`_.
     """
     pass
 

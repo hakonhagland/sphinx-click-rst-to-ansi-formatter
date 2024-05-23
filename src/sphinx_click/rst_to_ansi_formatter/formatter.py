@@ -102,6 +102,16 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
             for index, url in enumerate(self.urls, start=1):
                 self.parts.append(self.color_url(f"{index}.") + f" {url}\n")
 
+    def process_url(self, url: str) -> str:
+        if url not in self.urls:
+            self.urls.append(url)
+            idx = len(self.urls)
+        else:
+            idx = self.urls.index(url)
+        # Replace the URL with a placeholder
+        replacement_txt = f"[{idx}]"
+        return replacement_txt
+
     def visit_bullet_list(self, node: docutils.nodes.bullet_list) -> None:
         # Prepend with backspace and a newline to ensure the list is not rewrapped by Click
         # and to maintain the desired spacing. See comment for visit_literal_block() for
@@ -117,13 +127,8 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         # check if the emphasis is a URL
         if txt.startswith("http://") or txt.startswith("https://"):
             # Check if the URL is already in the list
-            if txt not in self.urls:
-                self.urls.append(txt)
-                idx = len(self.urls)
-            else:
-                idx = self.urls.index(txt)
-            # Replace the URL with a placeholder
-            txt = f"[{idx}]"
+            replacement_idx = self.process_url(txt)
+            txt = replacement_idx
         # Prepend and append the emphasis with ANSI color codes
         self.current_buffer.append(self.color_code(txt))
         # Skip further processing of children by docutils since we've manually
@@ -166,7 +171,12 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
             self.current_buffer.append(txt)
         else:
             # No special colors for internal references yet
-            self.current_buffer.append(txt)  # pragma: no cover
+            if "refuri" in node:
+                replacement_idx = self.process_url(node["refuri"])
+                self.current_buffer.append(f'"{txt}"')  # pragma: no cover
+                self.current_buffer.append(f" {self.color_code(replacement_idx)}")
+            else:
+                self.current_buffer.append(txt)  # pragma: no cover
         raise docutils.nodes.SkipNode
 
     def visit_Text(self, node: docutils.nodes.Text) -> None:
