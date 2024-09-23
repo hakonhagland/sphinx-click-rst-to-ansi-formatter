@@ -107,7 +107,7 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
             self.urls.append(url)
             idx = len(self.urls)
         else:
-            idx = self.urls.index(url)
+            idx = self.urls.index(url) + 1
         # Replace the URL with a placeholder
         replacement_txt = f"[{idx}]"
         return replacement_txt
