@@ -2,6 +2,7 @@ from colorama import Fore, Style
 
 from .types import ColorDict
 
+
 class Colors:
     def __init__(self, colors: ColorDict | None = None):
         if colors is None:
