@@ -9,8 +9,8 @@ def minimal():
     """``minimal`` shows a minimal example of a reST formatted docstring with and
     unordered list.
 
-    * This is the first ``item`` in the unordered list. It is a long line that will be wrapped
-    * This is the second item in the unordered list.
+    * This is the first ``item`` in the unordered list. 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+    * This is the second item in the unordered list. 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     * An URL link `first link <https://example.com>`_
     * An URL link `second link <https://example.com>`_
     """

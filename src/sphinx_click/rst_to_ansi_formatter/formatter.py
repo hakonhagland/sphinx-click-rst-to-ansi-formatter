@@ -17,13 +17,13 @@ from .types import ColorDict
 class PlainTextVisitor(docutils.nodes.NodeVisitor):
     def __init__(self, document: docutils.nodes.document, colors: Colors):
         docutils.nodes.NodeVisitor.__init__(self, document)
-        # Main content buffer: Collect the parts of the docstring here
-        self.parts: io.StringIO = io.StringIO()
+        # Main content buffer: Collect the modified docstring here
+        self.main_buffer: io.StringIO = io.StringIO()
         self.urls: list[str] = []  # Store URLs to be listed at the end of the docstring
         # Temporary buffer to store the current list item
         self.current_list_item: io.StringIO = io.StringIO()
         self.current_buffer: io.StringIO = (
-            self.parts
+            self.main_buffer
         )  # Initially points to the main buffer
         self.in_literal = (
             False  # Flag to indicate if we're inside a literal block (quoted text)
@@ -57,8 +57,8 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         wrapped_text = textwrap.fill(
             item_text, width=self.wrap_width, subsequent_indent="  "
         )
-        self.parts.write("• " + wrapped_text + "\n")
-        self.current_buffer = self.parts  # Switch back to using the main buffer
+        self.main_buffer.write("• " + wrapped_text + "\n")
+        self.current_buffer = self.main_buffer  # Switch back to using the main buffer
         self.current_list_item = io.StringIO()  # Reset the list item buffer
 
     def depart_literal_block(
@@ -96,11 +96,11 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
     # At the end of processing, append all URLs:
     def finalize(self) -> None:
         if self.urls:
-            self.parts.write(
+            self.main_buffer.write(
                 "\n\n" + self.color_heading("Referenced URLs:") + "\n\n\b\n"
             )
             for index, url in enumerate(self.urls, start=1):
-                self.parts.write(self.color_url(f"{index}.") + f" {url}\n")
+                self.main_buffer.write(self.color_url(f"{index}.") + f" {url}\n")
 
     def process_url(self, url: str) -> str:
         if url not in self.urls:
@@ -117,7 +117,7 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         # and to maintain the desired spacing. See comment for visit_literal_block() for
         # more information.
         self.in_bullet_list = True
-        self.parts.write("\n\n\b\n")
+        self.main_buffer.write("\n\n\b\n")
         pass
 
     def visit_emphasis(self, node: docutils.nodes.emphasis) -> None:
@@ -263,7 +263,7 @@ class RstToAnsiConverter:
         # Call finalize to append URLs
         visitor.finalize()
         # Join the collected parts into a single string
-        return visitor.parts.getvalue().strip()
+        return visitor.main_buffer.getvalue().strip()
 
     @staticmethod
     def fix_first_line_indentation(docstring: str) -> str:
