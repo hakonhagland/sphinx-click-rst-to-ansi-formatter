@@ -1,6 +1,7 @@
 import docutils.core
 import docutils.nodes
 import docutils.utils
+import io
 import re
 import textwrap
 import typing
@@ -17,11 +18,11 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
     def __init__(self, document: docutils.nodes.document, colors: Colors):
         docutils.nodes.NodeVisitor.__init__(self, document)
         # Main content buffer: Collect the parts of the docstring here
-        self.parts: list[str] = []
+        self.parts: io.StringIO = io.StringIO()
         self.urls: list[str] = []  # Store URLs to be listed at the end of the docstring
         # Temporary buffer to store the current list item
-        self.current_list_item: list[str] = []
-        self.current_buffer: list[str] = (
+        self.current_list_item: io.StringIO = io.StringIO()
+        self.current_buffer: io.StringIO = (
             self.parts
         )  # Initially points to the main buffer
         self.in_literal = (
@@ -52,14 +53,13 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
 
     def depart_list_item(self, node: docutils.nodes.list_item) -> None:
         # Process the accumulated list item content now that we've traversed the whole item
-        item_text = "".join(self.current_list_item)
+        item_text = self.current_list_item.getvalue()
         wrapped_text = textwrap.fill(
             item_text, width=self.wrap_width, subsequent_indent="  "
         )
-        self.parts.append(
-            "• " + wrapped_text + "\n"
-        )  # Append formatted content to main buffer
+        self.parts.write("• " + wrapped_text + "\n")
         self.current_buffer = self.parts  # Switch back to using the main buffer
+        self.current_list_item = io.StringIO()  # Reset the list item buffer
 
     def depart_literal_block(
         self, node: docutils.nodes.literal_block
@@ -96,11 +96,11 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
     # At the end of processing, append all URLs:
     def finalize(self) -> None:
         if self.urls:
-            self.parts.append(
+            self.parts.write(
                 "\n\n" + self.color_heading("Referenced URLs:") + "\n\n\b\n"
             )
             for index, url in enumerate(self.urls, start=1):
-                self.parts.append(self.color_url(f"{index}.") + f" {url}\n")
+                self.parts.write(self.color_url(f"{index}.") + f" {url}\n")
 
     def process_url(self, url: str) -> str:
         if url not in self.urls:
@@ -117,7 +117,7 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         # and to maintain the desired spacing. See comment for visit_literal_block() for
         # more information.
         self.in_bullet_list = True
-        self.parts.append("\n\n\b\n")
+        self.parts.write("\n\n\b\n")
         pass
 
     def visit_emphasis(self, node: docutils.nodes.emphasis) -> None:
@@ -130,7 +130,7 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
             replacement_idx = self.process_url(txt)
             txt = replacement_idx
         # Prepend and append the emphasis with ANSI color codes
-        self.current_buffer.append(self.color_code(txt))
+        self.current_buffer.write(self.color_code(txt))
         # Skip further processing of children by docutils since we've manually
         #  processed the text
         raise docutils.nodes.SkipNode
@@ -139,7 +139,7 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         # This method is called for each list item node in the document.
         # For example, for each item in a bullet list (unordered list
         # in reStructuredText).
-        self.current_list_item = []
+        self.current_list_item = io.StringIO()
         self.current_buffer = (
             self.current_list_item
         )  # Switch to using the list item buffer
@@ -153,13 +153,13 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         #   https://click.palletsprojects.com/en/8.1.x/api/#formatting
         # If paragraphs are handled, a paragraph can be prefixed with an empty line containing
         # the \b character (\x08) to indicate that no rewrapping should happen in that block.
-        self.current_buffer.append("\n\n\b\n" + self.color_code(txt) + "\n\n")
+        self.current_buffer.write("\n\n\b\n" + self.color_code(txt) + "\n\n")
         # Prevent further processing of child nodes, as we've already processed the text
         raise docutils.nodes.SkipNode
 
     def visit_paragraph(self, node: docutils.nodes.paragraph) -> None:
         if not self.in_bullet_list:
-            self.current_buffer.append("\n\n")
+            self.current_buffer.write("\n\n")
 
     def visit_reference(self, node: docutils.nodes.reference) -> None:
         # This method is called for each reference node in the document. That is, for
@@ -168,29 +168,29 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         txt = node.astext()
         if txt.startswith("http://") or txt.startswith("https://"):
             # No special colors for URLs yet
-            self.current_buffer.append(txt)
+            self.current_buffer.write(txt)
         else:
             # No special colors for internal references yet
             if "refuri" in node:
                 replacement_idx = self.process_url(node["refuri"])
-                self.current_buffer.append(f'"{txt}"')  # pragma: no cover
-                self.current_buffer.append(f" {self.color_code(replacement_idx)}")
+                self.current_buffer.write(f'"{txt}"')  # pragma: no cover
+                self.current_buffer.write(f" {self.color_code(replacement_idx)}")
             else:
-                self.current_buffer.append(txt)  # pragma: no cover
+                self.current_buffer.write(txt)  # pragma: no cover
         raise docutils.nodes.SkipNode
 
     def visit_Text(self, node: docutils.nodes.Text) -> None:
         txt = node.astext()
         if self.in_literal:
             # Wrap the text in ANSI codes for bright cyan
-            self.current_buffer.append(self.color_code(txt))
+            self.current_buffer.write(self.color_code(txt))
         else:
-            self.current_buffer.append(txt)
+            self.current_buffer.write(txt)
 
     def visit_title(self, node: docutils.nodes.title) -> None:
         # This method processes the section titles.
         txt = node.astext()
-        self.current_buffer.append("\n\n" + self.color_heading(txt) + "\n\n")
+        self.current_buffer.write("\n\n" + self.color_heading(txt) + "\n\n")
         raise docutils.nodes.SkipNode
 
     def visit_title_reference(self, node: docutils.nodes.title_reference) -> None:
@@ -198,7 +198,7 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         # For example text in backticks (`text`).
         txt = node.astext()
         # TODO: How to color the text in backticks?
-        self.current_buffer.append(txt)
+        self.current_buffer.write(txt)
         # Prevent further processing of child nodes, as we've already processed the text
         raise docutils.nodes.SkipNode
 
@@ -263,7 +263,7 @@ class RstToAnsiConverter:
         # Call finalize to append URLs
         visitor.finalize()
         # Join the collected parts into a single string
-        return "".join(visitor.parts).strip()
+        return visitor.parts.getvalue().strip()
 
     @staticmethod
     def fix_first_line_indentation(docstring: str) -> str:
