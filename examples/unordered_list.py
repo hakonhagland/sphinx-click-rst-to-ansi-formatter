@@ -11,7 +11,8 @@ def minimal():
 
     * This is the first ``item`` in the unordered list. It is a long line that will be wrapped
     * This is the second item in the unordered list.
-
+    * An URL link `first link <https://example.com>`_
+    * An URL link `second link <https://example.com>`_
     """
     pass
 
