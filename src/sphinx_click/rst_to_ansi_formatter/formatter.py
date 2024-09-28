@@ -48,7 +48,6 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         terminal_width = shutil.get_terminal_size(fallback=(80, 20)).columns
         # click's format_help() adds 2 extra spaces at the beginning of each line
         self.wrap_width = terminal_width - 2
-        self.wrap_width = 60  # For testing purposes
 
     def color_heading(self, txt: str) -> str:
         return self.colors.color_heading(txt)
