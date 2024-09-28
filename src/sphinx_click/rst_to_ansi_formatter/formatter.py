@@ -3,6 +3,7 @@ import docutils.nodes
 import docutils.utils
 import io
 import re
+import shutil
 import textwrap
 import typing
 from typing import Any
@@ -11,10 +12,20 @@ import click
 
 from .colors import Colors
 from .types import ColorDict
+from sphinx_click.rst_to_ansi_formatter import textutils
 
 
 # Visitor that will transform the document tree into plain text
 class PlainTextVisitor(docutils.nodes.NodeVisitor):
+    # Marker to indicate that a paragraph should not be rewrapped by Click
+    # NOTE: We need to put this marker in front of every paragraph since Click does
+    #      not wrap ANSI colored text correctly. If we don't put this marker, Click
+    #      will rewrap the text and the ANSI color codes will be messed up.
+    #      We will instead use a custom wrapper function to wrap ANSI colored text.
+    # NOTE: Refer to the Click documentation for more information:
+    #       https://click.palletsprojects.com/en/8.1.x/api/#click.wrap_text
+    CLICK_PARAGRAPH_NOWRAP_MARKER = "\b\n"
+
     def __init__(self, document: docutils.nodes.document, colors: Colors):
         docutils.nodes.NodeVisitor.__init__(self, document)
         # Main content buffer: Collect the modified docstring here
@@ -22,15 +33,22 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         self.urls: list[str] = []  # Store URLs to be listed at the end of the docstring
         # Temporary buffer to store the current list item
         self.current_list_item: io.StringIO = io.StringIO()
+        self.current_paragraph: io.StringIO = io.StringIO()
         self.current_buffer: io.StringIO = (
             self.main_buffer
         )  # Initially points to the main buffer
+        self.buffer_stack: list[io.StringIO] = []  # Stack to store buffers
+        self.push_buffer_stack(self.main_buffer)
         self.in_literal = (
             False  # Flag to indicate if we're inside a literal block (quoted text)
         )
         self.in_bullet_list = False  # Flag to indicate if we're inside a bullet list
         self.colors = colors
-        self.wrap_width = 80
+        # Dynamically set wrap width based on terminal size
+        terminal_width = shutil.get_terminal_size(fallback=(80, 20)).columns
+        # click's format_help() adds 2 extra spaces at the beginning of each line
+        self.wrap_width = terminal_width - 2
+        self.wrap_width = 60  # For testing purposes
 
     def color_heading(self, txt: str) -> str:
         return self.colors.color_heading(txt)
@@ -53,13 +71,15 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
 
     def depart_list_item(self, node: docutils.nodes.list_item) -> None:
         # Process the accumulated list item content now that we've traversed the whole item
-        item_text = self.current_list_item.getvalue()
-        wrapped_text = textwrap.fill(
-            item_text, width=self.wrap_width, subsequent_indent="  "
+        text = "• " + self.current_list_item.getvalue()
+        # Replace newlines with spaces to avoid premature line breaks in the wrapped text
+        text = text.replace("\n", " ")
+        wrapped_text = textutils.ansiwrap_fill(
+            text, width=self.wrap_width, subsequent_indent="  "
         )
-        self.main_buffer.write("• " + wrapped_text + "\n")
-        self.current_buffer = self.main_buffer  # Switch back to using the main buffer
-        self.current_list_item = io.StringIO()  # Reset the list item buffer
+        parent_buffer = self.pop_buffer_stack()
+        parent_buffer.write(wrapped_text + "\n")
+        self.current_buffer = parent_buffer  # Switch back to using the parent buffer
 
     def depart_literal_block(
         self, node: docutils.nodes.literal_block
@@ -72,8 +92,20 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         self.in_literal = False  # Exiting a literal block
 
     def depart_paragraph(self, node: docutils.nodes.paragraph) -> None:
-        # No action needed on departure for paragraph nodes yet
-        pass
+        if not self.in_bullet_list:
+            text = self.current_paragraph.getvalue()
+            # Replace newlines with spaces to avoid premature line breaks in the wrapped text
+            text = text.replace("\n", " ")
+            wrapped_text = textutils.ansiwrap_fill(
+                text, width=self.wrap_width, subsequent_indent=""
+            )
+            parent_buffer = self.pop_buffer_stack()
+            parent_buffer.write(
+                "\n" + self.CLICK_PARAGRAPH_NOWRAP_MARKER + wrapped_text
+            )
+            self.current_buffer = (
+                parent_buffer  # Switch back to using the parent buffer
+            )
 
     def depart_reference(
         self, node: docutils.nodes.reference
@@ -102,6 +134,13 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
             for index, url in enumerate(self.urls, start=1):
                 self.main_buffer.write(self.color_url(f"{index}.") + f" {url}\n")
 
+    def pop_buffer_stack(self) -> io.StringIO:
+        self.buffer_stack.pop()
+        return self.buffer_stack[-1]
+
+    def push_buffer_stack(self, buffer: io.StringIO) -> None:
+        self.buffer_stack.append(buffer)
+
     def process_url(self, url: str) -> str:
         if url not in self.urls:
             self.urls.append(url)
@@ -117,7 +156,7 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         # and to maintain the desired spacing. See comment for visit_literal_block() for
         # more information.
         self.in_bullet_list = True
-        self.main_buffer.write("\n\n\b\n")
+        self.current_buffer.write("\n\n\b\n")
         pass
 
     def visit_emphasis(self, node: docutils.nodes.emphasis) -> None:
@@ -143,23 +182,26 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         self.current_buffer = (
             self.current_list_item
         )  # Switch to using the list item buffer
+        self.push_buffer_stack(self.current_list_item)
 
     def visit_literal(self, node: docutils.nodes.literal) -> None:
         self.in_literal = True  # Entering a literal block
 
     def visit_literal_block(self, node: docutils.nodes.literal_block) -> None:
         txt = node.astext()
-        # According to the click documentation:
-        #   https://click.palletsprojects.com/en/8.1.x/api/#formatting
-        # If paragraphs are handled, a paragraph can be prefixed with an empty line containing
-        # the \b character (\x08) to indicate that no rewrapping should happen in that block.
-        self.current_buffer.write("\n\n\b\n" + self.color_code(txt) + "\n\n")
+        self.current_buffer.write(
+            "\n\n" + self.CLICK_PARAGRAPH_NOWRAP_MARKER + self.color_code(txt) + "\n\n"
+        )
         # Prevent further processing of child nodes, as we've already processed the text
         raise docutils.nodes.SkipNode
 
     def visit_paragraph(self, node: docutils.nodes.paragraph) -> None:
         if not self.in_bullet_list:
-            self.current_buffer.write("\n\n")
+            self.current_paragraph = io.StringIO()
+            self.current_buffer = (
+                self.current_paragraph
+            )  # Switch to using the paragraph buffer
+            self.push_buffer_stack(self.current_paragraph)
 
     def visit_reference(self, node: docutils.nodes.reference) -> None:
         # This method is called for each reference node in the document. That is, for
@@ -190,7 +232,7 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
     def visit_title(self, node: docutils.nodes.title) -> None:
         # This method processes the section titles.
         txt = node.astext()
-        self.current_buffer.write("\n\n" + self.color_heading(txt) + "\n\n")
+        self.current_buffer.write("\n\b\n" + self.color_heading(txt) + "\n\b\n")
         raise docutils.nodes.SkipNode
 
     def visit_title_reference(self, node: docutils.nodes.title_reference) -> None:

@@ -118,7 +118,7 @@ class TestBulletList:
         converted_text = converter.convert()
         # Check if the bullet list is correctly formatted
         assert (
-            "The following is a bullet list:\n\n\x08\n• This is a bullet list.\n• Another bullet point.\n\n\nNext paragraph."
+            "\b\nThe following is a bullet list:\n\n\b\n• This is a bullet list.\n• Another bullet point.\n\n\b\nNext paragraph."
             == converted_text
         )
 
