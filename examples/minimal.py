@@ -10,7 +10,7 @@ base_url = "https://example.github.io/example/main/"
 @click.option("--template", type=str, help="specify the template to use")
 def minimal(template: Optional[str]) -> None:  # pragma: no cover
     """
-    ``minimal-example`` let's you view a `minimal` example of a Click command.
+    ``minimal-example`` let's you view a `minimal` example of a Click command. 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
     See :doc:`Minimal example <minimal>` for more *information*.
 
     If the ``--template`` option is not used, a default template is used.
