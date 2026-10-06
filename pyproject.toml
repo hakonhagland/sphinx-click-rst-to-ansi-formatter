@@ -1,6 +1,6 @@
 [project]
 name = "sphinx-click-rst-to-ansi-formatter"
-version = "0.1.5"
+version = "0.2.0"
 description = "Convert reST formatted click help text to ANSI colored terminal text"
 authors = [{name = "Håkon Hægland", email = "hakon.hagland@gmail.com"}]
 readme = "README.md"
