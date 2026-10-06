@@ -10,9 +10,8 @@ Pull request
 
 To set up an environment for developing and submitting a pull request:
 
-* Install pyenv
-* Install the python versions listed in
-  `.python_version <https://github.com/hakonhagland/sphinx-click-rst-to-ansi-formatter/blob/main/.python-version>`_ with pyenv
+* Install Python 3.11, 3.12, 3.13 and 3.14, for example with pyenv. The tox
+  tests run on all of them, and the documentation needs Python 3.12 or newer.
 * On Linux and macOS:
    * Install Poetry : Run : ``curl -sSL https://install.python-poetry.org | python3 -``
    * On macOS: update PATH environment variable in your `~/.zshrc` init file:
@@ -25,7 +24,8 @@ To set up an environment for developing and submitting a pull request:
 
 * Then, from the root directory of this repository:
    * run ``poetry install`` to install development dependencies into a virtual environment
-   * run ``poetry shell`` to activate the virtual environment
+   * run ``eval $(poetry env activate)`` to activate the virtual environment
+     (Poetry 2 removed the ``poetry shell`` command)
    * run ``make test`` to run the test suite
    * run ``pre-commit install`` to install the pre-commit hooks
    * run ``make coverage`` to run unit tests and generate coverage report
