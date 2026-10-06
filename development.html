@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Suggesting changes to the code &mdash; sphinx-click-rst-to-ansi-formatter 0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+  <title>Suggesting changes to the code &mdash; sphinx-click-rst-to-ansi-formatter 0.1.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=2709fde1"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=59fadc99"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -88,9 +86,8 @@ or submit a pull request.</p>
 <h2>Pull request<a class="headerlink" href="#pull-request" title="Link to this heading"></a></h2>
 <p>To set up an environment for developing and submitting a pull request:</p>
 <ul class="simple">
-<li><p>Install pyenv</p></li>
-<li><p>Install the python versions listed in
-<a class="reference external" href="https://github.com/hakonhagland/sphinx-click-rst-to-ansi-formatter/blob/main/.python-version">.python_version</a> with pyenv</p></li>
+<li><p>Install Python 3.11, 3.12, 3.13 and 3.14, for example with pyenv. The tox
+tests run on all of them, and the documentation needs Python 3.12 or newer.</p></li>
 <li><dl class="simple">
 <dt>On Linux and macOS:</dt><dd><ul>
 <li><p>Install Poetry : Run : <code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">-sSL</span> <span class="pre">https://install.python-poetry.org</span> <span class="pre">|</span> <span class="pre">python3</span> <span class="pre">-</span></code></p></li>
@@ -113,7 +110,8 @@ or submit a pull request.</p>
 <li><dl class="simple">
 <dt>Then, from the root directory of this repository:</dt><dd><ul>
 <li><p>run <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span></code> to install development dependencies into a virtual environment</p></li>
-<li><p>run <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">shell</span></code> to activate the virtual environment</p></li>
+<li><p>run <code class="docutils literal notranslate"><span class="pre">eval</span> <span class="pre">$(poetry</span> <span class="pre">env</span> <span class="pre">activate)</span></code> to activate the virtual environment
+(Poetry 2 removed the <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">shell</span></code> command)</p></li>
 <li><p>run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code> to run the test suite</p></li>
 <li><p>run <code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">install</span></code> to install the pre-commit hooks</p></li>
 <li><p>run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">coverage</span></code> to run unit tests and generate coverage report</p></li>
@@ -139,7 +137,7 @@ or submit a pull request.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Håkon Hægland.</p>
+    <p>&#169; Copyright 2024-2026, Håkon Hægland.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
