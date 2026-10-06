@@ -1,9 +1,7 @@
 import colorama
 
 # Import the make_rst_to_ansi_formatter function to make it available at the package level
-from .formatter import RstToAnsiCommand
-from .formatter import RstToAnsiGroup
-from .formatter import make_rst_to_ansi_formatter
+from .formatter import RstToAnsiCommand, RstToAnsiGroup, make_rst_to_ansi_formatter
 
 # Initialize colorama to auto-reset styles after each print
 colorama.init(autoreset=True)

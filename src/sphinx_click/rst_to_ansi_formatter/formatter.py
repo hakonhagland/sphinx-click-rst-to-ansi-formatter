@@ -1,6 +1,3 @@
-import docutils.core
-import docutils.nodes
-import docutils.utils
 import io
 import re
 import shutil
@@ -8,10 +5,14 @@ import textwrap
 import typing
 
 import click
+import docutils.core
+import docutils.nodes
+import docutils.utils
+
+from sphinx_click.rst_to_ansi_formatter import textutils
 
 from .colors import Colors
 from .types import ColorDict
-from sphinx_click.rst_to_ansi_formatter import textutils
 
 
 # Visitor that will transform the document tree into plain text
@@ -155,14 +156,13 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         # more information.
         self.in_bullet_list = True
         self.current_buffer.write("\n\n\b\n")
-        pass
 
     def visit_emphasis(self, node: docutils.nodes.emphasis) -> None:
         # This method is called for each emphasis node in the document. That is, for
         # text in asterisks or underscores (e.g. *text* or _text_).
         txt = node.astext()
         # check if the emphasis is a URL
-        if txt.startswith("http://") or txt.startswith("https://"):
+        if txt.startswith(("http://", "https://")):
             # Check if the URL is already in the list
             replacement_idx = self.process_url(txt)
             txt = replacement_idx
@@ -206,7 +206,7 @@ class PlainTextVisitor(docutils.nodes.NodeVisitor):
         # - URLS: https://example.com
         # - Internal references:
         txt = node.astext()
-        if txt.startswith("http://") or txt.startswith("https://"):
+        if txt.startswith(("http://", "https://")):
             # No special colors for URLs yet
             self.current_buffer.write(txt)
         else:
@@ -376,7 +376,9 @@ class FormatHelpMixin:
             updated_help_text = RstToAnsiConverter(
                 help_text, self.base_url, self.colors
             ).convert()
-            setattr(self, "help", updated_help_text)
+            # NOTE: A plain assignment would make mypy infer a "help" attribute on
+            #       this mixin that conflicts with the one in click.Command.
+            setattr(self, "help", updated_help_text)  # noqa: B010
         super().format_help(ctx, formatter)  # type: ignore # Call the superclass method
 
 

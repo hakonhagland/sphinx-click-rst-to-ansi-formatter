@@ -1,4 +1,5 @@
 import click
+
 from sphinx_click.rst_to_ansi_formatter import make_rst_to_ansi_formatter
 
 base_url = "https://example.github.io/example/main/"
@@ -23,7 +24,6 @@ def minimal() -> None:
 
     For more information about the minimal example script see :doc:`/history`.
     """
-    pass
 
 
 @minimal.command(cls=make_rst_to_ansi_formatter(base_url))
@@ -33,7 +33,6 @@ def edit_example() -> None:  # pragma: no cover
     in your favorite editor.
     """
     click.echo("Editing the minimal example...")
-    pass
 
 
 if __name__ == "__main__":  # pragma: no cover
