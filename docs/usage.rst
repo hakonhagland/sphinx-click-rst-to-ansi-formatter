@@ -60,6 +60,29 @@ the console output becomes:
 
 which is hopefully more user-friendly.
 
+Subclassing
+-----------
+
+The ``RstToAnsiCommand`` and ``RstToAnsiGroup`` classes can be subclassed instead
+of calling ``make_rst_to_ansi_formatter``. Set the ``base_url`` class attribute,
+and optionally ``colors``:
+
+.. code-block:: python
+
+    import click
+    from sphinx_click.rst_to_ansi_formatter import RstToAnsiGroup
+
+    class DocGroup(RstToAnsiGroup):
+        base_url = "https://example.github.io/example/main/"
+
+    @click.group(cls=DocGroup)
+    def cli():
+        """See :doc:`Minimal example <minimal>` for more *information*."""
+
+A type checker such as mypy cannot check a class that inherits from the class
+``make_rst_to_ansi_formatter`` returns, since that class is built at runtime.
+It can check a class that inherits from ``RstToAnsiCommand`` or ``RstToAnsiGroup``.
+
 Signature
 ---------
 
