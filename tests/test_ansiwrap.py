@@ -1,6 +1,7 @@
 # test_ansiwrap.py
 
 import pytest
+
 from sphinx_click.rst_to_ansi_formatter.textutils import ansiwrap_fill
 
 
@@ -56,8 +57,7 @@ def test_text_with_newlines() -> None:
 def test_wrapping_with_ansi_and_indent() -> None:
     text = "This is a \x1b[31mred\x1b[0m text that should wrap and indent properly."
     expected = (
-        "This is a \x1b[31mred\x1b[0m text that should wrap\n"
-        "    and indent properly."
+        "This is a \x1b[31mred\x1b[0m text that should wrap\n    and indent properly."
     )
     result = ansiwrap_fill(text, width=35, subsequent_indent="    ")
     assert result == expected
@@ -199,8 +199,6 @@ def test_skip_leading_spaces_after_wrap() -> None:
 
 def test_wrapping_with_leading_spaces() -> None:
     text = "This is a test with  multiple   spaces that will cause wrapping."
-    expected = (
-        "This is a test with\n" "  multiple   spaces that\n  will cause wrapping."
-    )
+    expected = "This is a test with\n  multiple   spaces that\n  will cause wrapping."
     result = ansiwrap_fill(text, width=25, subsequent_indent="  ")
     assert result == expected

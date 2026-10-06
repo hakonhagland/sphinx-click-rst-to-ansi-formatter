@@ -1,6 +1,7 @@
 # import typing
-import pytest
 from pathlib import Path
+
+import pytest
 
 from sphinx_click.rst_to_ansi_formatter.colors import Colors
 

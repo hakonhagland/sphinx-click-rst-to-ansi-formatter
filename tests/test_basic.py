@@ -5,9 +5,9 @@ import sys
 # import pytest
 from _pytest.logging import LogCaptureFixture
 from click.testing import CliRunner
-# from pytest_mock.plugin import MockerFixture
 
-import sphinx_click.rst_to_ansi_formatter.formatter as formatter
+# from pytest_mock.plugin import MockerFixture
+from sphinx_click.rst_to_ansi_formatter import formatter
 from sphinx_click.rst_to_ansi_formatter.colors import Colors
 
 # Append the parent directory to sys.path to make 'examples' package available

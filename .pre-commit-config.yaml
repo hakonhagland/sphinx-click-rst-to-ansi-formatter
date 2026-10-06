@@ -2,40 +2,39 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v6.0.0
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-yaml
 -   repo: https://github.com/astral-sh/ruff-pre-commit.git
-    rev: v0.3.3
+    rev: v0.16.10
     hooks:
-      - id: ruff
+      - id: ruff-check
         args: [ "--fix" ]
       - id: ruff-format
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.9.0
+    rev: v2.4.0
     hooks:
       - id: mypy
       # Note: since we run mypy on the tests/ folder also we need to add pytest as
       #       additional dependency
         additional_dependencies:
-          - types-colorama==0.4.15.20240311
-          - types-docutils==0.20.0.20240317
-          - types-click==7.1.8
-          - mypy==1.9.0
-          - pytest==8.1.1
+          - click==8.5.0
+          - types-colorama==0.4.15.20260508
+          - types-docutils==0.23.0.20260923
+          - mypy==2.4.0
+          - pytest==9.1.1
         args: []
         pass_filenames: false
         entry: ./pre-commit-helpers/run_mypy.sh
 -   repo: https://github.com/rstcheck/rstcheck
-    rev: v6.2.0
+    rev: v6.3.0
     hooks:
       - id: rstcheck
         args: ["--ignore-directives", "automodule"]
         additional_dependencies:
-          - sphinx==7.2.6
-          - toml==0.10.2
+          - sphinx==9.1.0
 -   repo: local
     hooks:
       - id: coverage

@@ -1,34 +1,56 @@
-[tool.poetry]
+[project]
 name = "sphinx-click-rst-to-ansi-formatter"
-version = "0.1.3"
-description = ""
-authors = ["Håkon Hægland <hakon.hagland@gmail.com>"]
+version = "0.2.0"
+description = "Convert reST formatted click help text to ANSI colored terminal text"
+authors = [{name = "Håkon Hægland", email = "hakon.hagland@gmail.com"}]
 readme = "README.md"
-repository = "https://github.com/hakonhagland/sphinx-click-rst-to-ansi-formatter"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = [
+    "colorama>=0.4.6,<0.5",
+    "click>=8.1.7,<9",
+    "docutils>=0.21.2",
+]
+classifiers = [
+    "Environment :: Console",
+    "Framework :: Sphinx",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Documentation :: Sphinx",
+    "Topic :: Software Development :: Documentation",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Repository = "https://github.com/hakonhagland/sphinx-click-rst-to-ansi-formatter"
+Documentation = "https://hakonhagland.github.io/sphinx-click-rst-to-ansi-formatter/"
+
+[tool.poetry]
 packages = [{include = "sphinx_click", from = "src"}]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-colorama = "^0.4.6"
-click = "^8.1.7"
-docutils = "^0.20.1"
-
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.1.1"
-pytest-mock = "^3.12.0"
-coverage = {extras = ["toml"], version = "^7.4.3"}
-ruff = "^0.3.2"
-sphinx = "^7.2.6"
-sphinx-rtd-theme = "^2.0.0"
-sphinx-autodoc-typehints = "^2.0.0"
-pre-commit = "^3.6.2"
-mypy = "^1.9.0"
-types-colorama = "^0.4.15.20240311"
-types-docutils = "^0.20.0.20240317"
-types-click = "^7.1.8"
-tox = "^4.14.1"
-rstcheck = {extras = ["sphinx", "toml"], version = "^6.2.0"}
-toml = "^0.10.2"
+pytest = "^9.1.1"
+pytest-mock = "^3.16.0"
+coverage = {extras = ["toml"], version = "^7.16.2"}
+ruff = "^0.16.10"
+# Sphinx 9 needs Python 3.12 or newer, so the docs tools (including rstcheck,
+# which imports Sphinx) are only installed there. CI builds the docs on 3.13.
+sphinx = {version = "^9.1.0", python = ">=3.12"}
+sphinx-rtd-theme = {version = "^3.1.0", python = ">=3.12"}
+sphinx-autodoc-typehints = {version = "^3.13.9", python = ">=3.12"}
+pre-commit = "^4.6.2"
+mypy = "^2.4.0"
+types-colorama = "^0.4.15.20260508"
+types-docutils = "^0.23.0.20260923"
+tox = "^4.64.9"
+rstcheck = {extras = ["sphinx"], version = "^6.3.0", python = ">=3.12"}
 
 [tool.ruff]
 line-length = 88
@@ -50,5 +72,5 @@ report_level = "INFO"
 ignore_directives = ["automodule", "autoclass", "toctree"]
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0"]
 build-backend = "poetry.core.masonry.api"

@@ -1,10 +1,11 @@
+import importlib.metadata
 import os
 import sys
 
 project = "sphinx-click-rst-to-ansi-formatter"
-copyright = "2024, Håkon Hægland"
+copyright = "2024-2026, Håkon Hægland"
 author = "Håkon Hægland"
-release = "0.1"
+release = importlib.metadata.version("sphinx-click-rst-to-ansi-formatter")
 
 # -- General configuration ---------------------------------------------------
 
@@ -18,7 +19,6 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "sphinx_rtd_theme"
-html_static_path = ["_static"]
 html_context = {
     "display_github": True,
     "github_user": "hakonhagland",
