@@ -49,7 +49,10 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#subclassing">Subclassing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#signature">Signature</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sphinx_click.rst_to_ansi_formatter.formatter.RstToAnsiCommand"><code class="docutils literal notranslate"><span class="pre">RstToAnsiCommand</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sphinx_click.rst_to_ansi_formatter.formatter.RstToAnsiGroup"><code class="docutils literal notranslate"><span class="pre">RstToAnsiGroup</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#sphinx_click.rst_to_ansi_formatter.formatter.make_rst_to_ansi_formatter"><code class="docutils literal notranslate"><span class="pre">make_rst_to_ansi_formatter()</span></code></a></li>
 </ul>
 </li>
@@ -128,10 +131,48 @@ the console output becomes:</p>
 <a class="reference internal image-reference" href="_images/minimal-example1.png"><img alt="_images/minimal-example1.png" class="align-center" src="_images/minimal-example1.png" style="width: 100%;" /></a>
 <div style="margin-top:20px;"></div><p>which is hopefully more user-friendly.</p>
 </section>
+<section id="subclassing">
+<h2>Subclassing<a class="headerlink" href="#subclassing" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">RstToAnsiCommand</span></code> and <code class="docutils literal notranslate"><span class="pre">RstToAnsiGroup</span></code> classes can be subclassed instead
+of calling <code class="docutils literal notranslate"><span class="pre">make_rst_to_ansi_formatter</span></code>. Set the <code class="docutils literal notranslate"><span class="pre">base_url</span></code> class attribute,
+and optionally <code class="docutils literal notranslate"><span class="pre">colors</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">from</span> <span class="nn">sphinx_click.rst_to_ansi_formatter</span> <span class="kn">import</span> <span class="n">RstToAnsiGroup</span>
+
+<span class="k">class</span> <span class="nc">DocGroup</span><span class="p">(</span><span class="n">RstToAnsiGroup</span><span class="p">):</span>
+    <span class="n">base_url</span> <span class="o">=</span> <span class="s2">&quot;https://example.github.io/example/main/&quot;</span>
+
+<span class="nd">@click</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">DocGroup</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cli</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;See :doc:`Minimal example &lt;minimal&gt;` for more *information*.&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>A type checker such as mypy cannot check a class that inherits from the class
+<code class="docutils literal notranslate"><span class="pre">make_rst_to_ansi_formatter</span></code> returns, since that class is built at runtime.
+It can check a class that inherits from <code class="docutils literal notranslate"><span class="pre">RstToAnsiCommand</span></code> or <code class="docutils literal notranslate"><span class="pre">RstToAnsiGroup</span></code>.</p>
+</section>
 <section id="signature">
 <h2>Signature<a class="headerlink" href="#signature" title="Link to this heading"></a></h2>
 <p>The signature for <code class="docutils literal notranslate"><span class="pre">make_rst_to_ansi_formatter</span></code> is:</p>
-<dl class="py function" id="module-sphinx_click.rst_to_ansi_formatter.formatter">
+<dl class="py class" id="module-sphinx_click.rst_to_ansi_formatter.formatter">
+<dt class="sig sig-object py" id="sphinx_click.rst_to_ansi_formatter.formatter.RstToAnsiCommand">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sphinx_click.rst_to_ansi_formatter.formatter.</span></span><span class="sig-name descname"><span class="pre">RstToAnsiCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epilog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">short_help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options_metavar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'[OPTIONS]'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_help_option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_args_is_help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deprecated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sphinx_click.rst_to_ansi_formatter.formatter.RstToAnsiCommand" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FormatHelpMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></p>
+<p>A <code class="docutils literal notranslate"><span class="pre">click.Command</span></code> whose reST help text is displayed with ANSI colors.</p>
+<p>Subclass it and set <code class="docutils literal notranslate"><span class="pre">base_url</span></code>, and optionally <code class="docutils literal notranslate"><span class="pre">colors</span></code>, to configure the
+conversion. See <a class="reference internal" href="#sphinx_click.rst_to_ansi_formatter.formatter.make_rst_to_ansi_formatter" title="sphinx_click.rst_to_ansi_formatter.formatter.make_rst_to_ansi_formatter"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_rst_to_ansi_formatter()</span></code></a> for their meaning.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sphinx_click.rst_to_ansi_formatter.formatter.RstToAnsiGroup">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sphinx_click.rst_to_ansi_formatter.formatter.</span></span><span class="sig-name descname"><span class="pre">RstToAnsiGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sphinx_click.rst_to_ansi_formatter.formatter.RstToAnsiGroup" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FormatHelpMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Group</span></code></p>
+<p>A <code class="docutils literal notranslate"><span class="pre">click.Group</span></code> whose reST help text is displayed with ANSI colors.</p>
+<p>Subclass it and set <code class="docutils literal notranslate"><span class="pre">base_url</span></code>, and optionally <code class="docutils literal notranslate"><span class="pre">colors</span></code>, to configure the
+conversion. See <a class="reference internal" href="#sphinx_click.rst_to_ansi_formatter.formatter.make_rst_to_ansi_formatter" title="sphinx_click.rst_to_ansi_formatter.formatter.make_rst_to_ansi_formatter"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_rst_to_ansi_formatter()</span></code></a> for their meaning.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="sphinx_click.rst_to_ansi_formatter.formatter.make_rst_to_ansi_formatter">
 <span class="sig-prename descclassname"><span class="pre">sphinx_click.rst_to_ansi_formatter.formatter.</span></span><span class="sig-name descname"><span class="pre">make_rst_to_ansi_formatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sphinx_click.rst_to_ansi_formatter.formatter.make_rst_to_ansi_formatter" title="Link to this definition"></a></dt>
 <dd><p>Create a reST to ANSI text formatter class.</p>
@@ -144,10 +185,10 @@ the console output becomes:</p>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">CustomRstToAnsiFormatter</span></code></p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">type[RstToAnsiCommand]</span> <span class="pre">|</span> <span class="pre">type[RstToAnsiGroup]</span></code></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Returns a sub class of <code class="docutils literal notranslate"><span class="pre">click.Command</span></code> that can be used to convert help text from reST to ANSI terminal color encoded text</p>
+<dd class="field-odd"><p>Returns a sub class of <a class="reference internal" href="#sphinx_click.rst_to_ansi_formatter.formatter.RstToAnsiCommand" title="sphinx_click.rst_to_ansi_formatter.formatter.RstToAnsiCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">RstToAnsiCommand</span></code></a>, or of <a class="reference internal" href="#sphinx_click.rst_to_ansi_formatter.formatter.RstToAnsiGroup" title="sphinx_click.rst_to_ansi_formatter.formatter.RstToAnsiGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">RstToAnsiGroup</span></code></a> when <code class="docutils literal notranslate"><span class="pre">group</span></code> is True, that can be used to convert help text from reST to ANSI terminal color encoded text</p>
 </dd>
 </dl>
 </dd></dl>
